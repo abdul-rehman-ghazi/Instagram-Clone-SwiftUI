@@ -8,38 +8,32 @@
 import Foundation
 import SwiftUI
 
-struct SearchBar: UIViewRepresentable {
-
+struct SearchBar: View {
     @Binding var text: String
     var placeholder: String
 
-    class Coordinator: NSObject, UISearchBarDelegate {
-
-        @Binding var text: String
-
-        init(text: Binding<String>) {
-            _text = text
+    var body: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(Color(.systemGray4))
+                .padding(.horizontal, 5)
+            TextField(placeholder, text: $text)
+                .overlay(!text.isEmpty ?
+                         Image(systemName: "xmark.circle.fill")
+                    .foregroundColor(Color(.systemGray4))
+                    .padding(.leading, 10)
+                    .onTapGesture {
+                        text = ""
+                    }
+                    : nil,
+                     alignment: .trailing)
         }
-
-        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-            text = searchText
-        }
-    }
-
-    func makeCoordinator() -> SearchBar.Coordinator {
-        return Coordinator(text: $text)
-    }
-
-    func makeUIView(context: UIViewRepresentableContext<SearchBar>) -> UISearchBar {
-        let searchBar = UISearchBar(frame: .zero)
-        searchBar.delegate = context.coordinator
-        searchBar.placeholder = placeholder
-        searchBar.searchBarStyle = .minimal
-        searchBar.autocapitalizationType = .none
-        return searchBar
-    }
-
-    func updateUIView(_ uiView: UISearchBar, context: UIViewRepresentableContext<SearchBar>) {
-        uiView.text = text
+        .padding(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(lineWidth: 2)
+                .foregroundColor(Color(.systemGray4))
+        )
+        .padding(.horizontal, 10)
     }
 }
